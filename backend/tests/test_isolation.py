@@ -140,10 +140,14 @@ async def test_user_cannot_access_other_users_item_by_id(
     assert resp_a.status_code == 201
     item_id = resp_a.json()["id"]
 
-    # User B tries to access it by ID
-    resp_b = await client.get(f"/api/v1/items/{item_id}", headers=user_b_headers)
-    # Should return 404 (or 403) — the item doesn't exist for User B
-    assert resp_b.status_code in (404, 403)
+    # User B tries to update it by ID (which requires ownership)
+    resp_b = await client.put(
+        f"/api/v1/items/{item_id}",
+        json={"name": "Hacked Name"},
+        headers=user_b_headers,
+    )
+    # Should return 404 — the item doesn't exist for User B (scoped by user_id)
+    assert resp_b.status_code == 404
 
 
 # ---------------------------------------------------------------------------
@@ -177,12 +181,14 @@ async def test_user_cannot_update_other_users_item(
         json={"name": "Stolen Name"},
         headers=user_b_headers,
     )
-    assert resp_b.status_code in (404, 403)
+    assert resp_b.status_code == 404
 
-    # Verify the name wasn't changed (User A can still see original)
-    resp_check = await client.get(f"/api/v1/items/{item_id}", headers=user_a_headers)
+    # Verify the name wasn't changed (User A can still see original in list)
+    resp_check = await client.get("/api/v1/items", headers=user_a_headers)
     assert resp_check.status_code == 200
-    assert resp_check.json()["name"] == "Original Name"
+    items = resp_check.json()
+    assert len(items) == 1
+    assert items[0]["name"] == "Original Name"
 
 
 async def test_user_cannot_delete_other_users_item(
@@ -207,11 +213,14 @@ async def test_user_cannot_delete_other_users_item(
 
     # User B tries to delete it
     resp_b = await client.delete(f"/api/v1/items/{item_id}", headers=user_b_headers)
-    assert resp_b.status_code in (404, 403)
+    assert resp_b.status_code == 404
 
-    # Verify it wasn't deleted (User A can still get it)
-    resp_check = await client.get(f"/api/v1/items/{item_id}", headers=user_a_headers)
+    # Verify it wasn't deleted (User A can still see it in list)
+    resp_check = await client.get("/api/v1/items", headers=user_a_headers)
     assert resp_check.status_code == 200
+    items = resp_check.json()
+    assert len(items) == 1
+    assert items[0]["name"] == "Item to Protect"
 
 
 async def test_user_cannot_mark_other_users_item_sold(
@@ -243,12 +252,14 @@ async def test_user_cannot_mark_other_users_item_sold(
         },
         headers=user_b_headers,
     )
-    assert resp_b.status_code in (404, 403)
+    assert resp_b.status_code == 404
 
-    # Verify it's still unsold (User A can check)
-    resp_check = await client.get(f"/api/v1/items/{item_id}", headers=user_a_headers)
+    # Verify it's still unsold (User A can check via list)
+    resp_check = await client.get("/api/v1/items", headers=user_a_headers)
     assert resp_check.status_code == 200
-    assert resp_check.json()["status"] == "unsold"
+    items = resp_check.json()
+    assert len(items) == 1
+    assert items[0]["status"] == "unsold"
 
 
 # ---------------------------------------------------------------------------

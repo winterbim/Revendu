@@ -18,7 +18,7 @@ from app.services.auth_service import authenticate_user, create_user, get_user_b
 settings = get_settings()
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-limiter = Limiter(key_func=get_remote_address)
+limiter = Limiter(key_func=get_remote_address, enabled=not settings.is_test)
 
 _REFRESH_COOKIE = "revendu_refresh_token"
 _COOKIE_MAX_AGE = settings.refresh_token_expire_days * 24 * 3600

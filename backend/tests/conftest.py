@@ -7,10 +7,14 @@ Postgres instance. The async engine is scoped per-test to guarantee isolation.
 
 import os
 
-# Override rate limits before any app module is imported so get_settings()
+# Override settings before any app module is imported so get_settings()
 # picks up the values (it is @lru_cache — first call wins).
-os.environ.setdefault("RATE_LIMIT_LOGIN", "10000/minute")
-os.environ.setdefault("ENVIRONMENT", "test")
+os.environ["RATE_LIMIT_LOGIN"] = "10000/minute"
+os.environ["ENVIRONMENT"] = "test"
+
+# Clear cached settings so test values are picked up
+from app.config import get_settings
+get_settings.cache_clear()
 
 import asyncio
 from decimal import Decimal

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/bin/pip install:*)",
+      "Bash(.venv/bin/pytest tests/ -v)",
+      "Bash(.venv/bin/pytest tests/test_items.py::test_register_success -v)",
+      "Bash(.venv/bin/pip show:*)",
+      "Bash(.venv/bin/python -c \"import fastapi; print\\(fastapi.__version__\\); import starlette; print\\(starlette.__version__\\)\")",
+      "Bash(.venv/bin/python -c \":*)",
+      "Bash(.venv/bin/pytest tests/ -v --tb=short)",
+      "Bash(.venv/bin/pytest backend/tests/ -v --tb=short)",
+      "Bash(../.venv/bin/alembic upgrade:*)",
+      "Bash(.venv/bin/alembic upgrade:*)",
+      "Bash(.venv/bin/alembic revision:*)",
+      "Bash(ls /home/wina/Bureau/revendu/frontend/src/app/\\\\\\(app\\\\\\)/sync/)",
+      "Bash(ls /home/wina/Bureau/revendu/frontend/src/app/\\\\\\(app\\\\\\)/export/)"
+    ]
+  }
+}

@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, status
@@ -10,6 +11,8 @@ from slowapi.util import get_remote_address
 from sqlalchemy import text
 
 from app.config import get_settings
+from app.core.exceptions import RevenduException
+from app.core.logging_config import ContextFilter, generate_request_id, setup_logging
 from app.routers import auth, dashboard, items
 from app.routers.export import router as export_router
 from app.routers.import_router import router as import_router
@@ -17,6 +20,12 @@ from app.routers.payments import router as payments_router
 from app.routers.sync import router as sync_router
 
 settings = get_settings()
+
+# ---------------------------------------------------------------------------
+# Logging setup
+# ---------------------------------------------------------------------------
+setup_logging()
+logger = logging.getLogger("revendu")
 
 
 # ---------------------------------------------------------------------------
@@ -33,7 +42,8 @@ limiter = Limiter(key_func=get_remote_address, default_limits=["200/minute"])
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: nothing to initialise beyond the engine (created at import time)
+    # Startup
+    logger.info("Revendu API starting (env=%s)", settings.environment)
     yield
     # Shutdown: dispose the engine connection pool
     from app.database import engine
@@ -61,7 +71,8 @@ app = FastAPI(
 # Rate limiting middleware
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-app.add_middleware(SlowAPIMiddleware)
+if not settings.is_test:
+    app.add_middleware(SlowAPIMiddleware)
 
 # CORS — allow the Next.js frontend in development
 app.add_middleware(
@@ -78,8 +89,37 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# Request ID middleware
+# ---------------------------------------------------------------------------
+
+@app.middleware("http")
+async def request_id_middleware(request: Request, call_next):
+    request_id = generate_request_id()
+    request.state.request_id = request_id
+    ContextFilter.set_context(request_id=request_id)
+    response = await call_next(request)
+    response.headers["X-Request-ID"] = request_id
+    ContextFilter.clear_context()
+    return response
+
+
+# ---------------------------------------------------------------------------
+# Exception handlers
+# ---------------------------------------------------------------------------
+
+@app.exception_handler(RevenduException)
+async def revendu_exception_handler(request: Request, exc: RevenduException) -> JSONResponse:
+    logger.warning("Business error: %s (status=%d)", exc.detail, exc.status_code)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+    )
+
+
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    logger.error("Unhandled exception: %s", str(exc), exc_info=True)
     if settings.is_production:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
