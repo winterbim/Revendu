@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/home/wina/.local/bin/alembic upgrade:*)"
+    ]
+  }
+}

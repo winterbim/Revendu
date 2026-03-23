@@ -1,0 +1,25 @@
+{
+  "name": "revendu-promo-videos",
+  "version": "1.0.0",
+  "description": "Vidéos promotionnelles Revendu — YouTube Shorts, TikTok, Facebook, LinkedIn",
+  "scripts": {
+    "start": "remotion studio",
+    "build:shorts": "remotion render YoutubeShorts out/youtube-shorts.mp4",
+    "build:tiktok": "remotion render TikTok out/tiktok.mp4",
+    "build:facebook": "remotion render Facebook out/facebook.mp4",
+    "build:linkedin": "remotion render LinkedIn out/linkedin.mp4",
+    "build:all": "npm run build:shorts && npm run build:tiktok && npm run build:facebook && npm run build:linkedin"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "@remotion/core": "^4.0.0",
+    "remotion": "^4.0.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.4.0"
+  }
+}

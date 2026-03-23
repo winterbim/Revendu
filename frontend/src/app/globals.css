@@ -1,0 +1,324 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+@layer base {
+  :root {
+    /* Revendu dark-mode-first palette */
+    --background: 240 8% 7%;        /* #0f0f13 */
+    --foreground: 240 10% 96%;      /* near white */
+
+    --card: 240 8% 11%;             /* #18181f */
+    --card-foreground: 240 10% 96%;
+
+    --popover: 240 8% 11%;
+    --popover-foreground: 240 10% 96%;
+
+    --primary: 239 84% 67%;         /* #6366f1 indigo */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 160 84% 39%;       /* #10b981 emerald */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 240 6% 16%;
+    --muted-foreground: 240 5% 55%;
+
+    --accent: 240 6% 16%;
+    --accent-foreground: 240 10% 96%;
+
+    --destructive: 0 84% 60%;       /* #ef4444 red */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 6% 17%;           /* #27272f */
+    --input: 240 6% 17%;
+    --ring: 239 84% 67%;
+
+    --radius: 0.625rem;
+
+    /* Custom semantic tokens */
+    --color-profit: 160 84% 39%;    /* emerald */
+    --color-loss: 0 84% 60%;        /* red */
+    --color-warning: 38 92% 50%;    /* amber #f59e0b */
+    --color-indigo: 239 84% 67%;
+    --color-surface: 240 8% 11%;
+    --color-surface-2: 240 7% 14%;
+    --sidebar-width: 240px;
+  }
+
+  /* Light mode override (opt-in) */
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 8%;
+    --card: 0 0% 98%;
+    --card-foreground: 240 10% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 8%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 160 84% 39%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 5% 92%;
+    --muted-foreground: 240 4% 40%;
+    --accent: 240 5% 92%;
+    --accent-foreground: 240 10% 8%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 6% 88%;
+    --input: 240 6% 88%;
+    --ring: 239 84% 67%;
+    --color-surface: 0 0% 98%;
+    --color-surface-2: 240 5% 94%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply antialiased;
+    font-feature-settings: "cv11", "ss01";
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+
+  /* Selection */
+  ::selection {
+    background: hsl(var(--primary) / 0.25);
+    color: hsl(var(--foreground));
+  }
+}
+
+@layer components {
+  /* Glass morphism card */
+  .card-glass {
+    @apply rounded-xl border border-border/50 bg-card/80 backdrop-blur-sm;
+  }
+
+  /* Glass morphism card — premium variant */
+  .card-glass-premium {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--card) / 0.9) 0%,
+      hsl(var(--card) / 0.7) 100%
+    );
+    @apply rounded-2xl border border-white/5 backdrop-blur-xl;
+    box-shadow: 0 0 0 1px hsl(var(--border) / 0.5), 0 20px 40px -12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-gradient-to-r from-indigo-400 to-emerald-400 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-indigo {
+    @apply bg-gradient-to-r from-indigo-300 to-indigo-500 bg-clip-text text-transparent;
+  }
+
+  /* Animated gradient text */
+  .text-gradient-animate {
+    background: linear-gradient(
+      90deg,
+      #818cf8 0%,
+      #a78bfa 25%,
+      #34d399 50%,
+      #818cf8 75%,
+      #a78bfa 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    @apply animate-gradient-shift;
+  }
+
+  /* Shimmer skeleton */
+  .skeleton {
+    @apply animate-shimmer rounded-lg;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 25%,
+      hsl(var(--muted-foreground) / 0.1) 50%,
+      hsl(var(--muted)) 75%
+    );
+    background-size: 200% 100%;
+  }
+
+  /* Focus ring */
+  .focus-ring {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  /* Threshold colors */
+  .threshold-safe {
+    color: hsl(var(--color-profit));
+  }
+
+  .threshold-warning {
+    color: hsl(var(--color-warning));
+  }
+
+  .threshold-danger {
+    color: hsl(var(--destructive));
+  }
+
+  /* Aurora animated background */
+  .aurora-bg {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .aurora-bg::before {
+    content: "";
+    position: absolute;
+    inset: -60%;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 30%, hsl(var(--primary) / 0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 70% 50% at 80% 70%, hsl(160 84% 39% / 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 70% at 50% 10%, hsl(270 80% 60% / 0.08) 0%, transparent 60%);
+    animation: aurora 10s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Gradient border card */
+  .gradient-border {
+    position: relative;
+    background: hsl(var(--card));
+    border-radius: 1rem;
+  }
+
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.5), transparent 50%, hsl(160 84% 39% / 0.3));
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* Spotlight card effect on hover */
+  .spotlight-card {
+    transition: all 0.3s ease;
+  }
+
+  .spotlight-card:hover {
+    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.3), 0 20px 60px -12px hsl(var(--primary) / 0.2);
+    transform: translateY(-2px);
+  }
+}
+
+@layer utilities {
+  /* Grid background for hero */
+  .bg-grid {
+    background-image: linear-gradient(
+        rgba(99, 102, 241, 0.04) 1px,
+        transparent 1px
+      ),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Dense grid for sections */
+  .bg-grid-sm {
+    background-image: linear-gradient(
+        rgba(99, 102, 241, 0.03) 1px,
+        transparent 1px
+      ),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* Glow effects */
+  .glow-indigo {
+    box-shadow: 0 0 40px rgba(99, 102, 241, 0.15);
+  }
+
+  .glow-emerald {
+    box-shadow: 0 0 40px rgba(16, 185, 129, 0.15);
+  }
+
+  .glow-indigo-strong {
+    box-shadow: 0 0 80px rgba(99, 102, 241, 0.3), 0 0 160px rgba(99, 102, 241, 0.1);
+  }
+
+  /* Stagger animation delays */
+  .delay-75  { animation-delay:  75ms; }
+  .delay-100 { animation-delay: 100ms; }
+  .delay-150 { animation-delay: 150ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-600 { animation-delay: 600ms; }
+  .delay-700 { animation-delay: 700ms; }
+  .delay-1000 { animation-delay: 1000ms; }
+
+  /* Opacity for staggered animations that start invisible */
+  .opacity-0-start {
+    opacity: 0;
+  }
+
+  /* Noise texture */
+  .noise {
+    position: relative;
+  }
+
+  .noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  /* Progress bar with CSS variable width */
+  .progress-animated {
+    width: var(--progress-width, 0%);
+    animation: progress-fill 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: var(--progress-delay, 0ms);
+  }
+
+  /* Transition page smooth */
+  .page-enter {
+    animation: fade-up 0.4s ease-out forwards;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
