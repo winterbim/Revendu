@@ -12,11 +12,11 @@ RUN apt-get update && apt-get install -y \
 RUN pip install --no-cache-dir hatchling
 
 # Dependency layer (cache-friendly)
-COPY pyproject.toml ./
+COPY backend/pyproject.toml ./
 RUN pip install --no-cache-dir .
 
 # Application code
-COPY . .
+COPY backend/ .
 
 # Run migrations then start server
 CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
