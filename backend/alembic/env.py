@@ -27,7 +27,13 @@ def get_url() -> str:
     from dotenv import load_dotenv
 
     load_dotenv()
-    return os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))  # type: ignore[return-value]
+    url = os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))  # type: ignore[return-value]
+    # Railway provides postgresql:// but asyncpg needs postgresql+asyncpg://
+    if url and url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    elif url and url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+    return url
 
 
 def run_migrations_offline() -> None:

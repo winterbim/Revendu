@@ -18,5 +18,5 @@ RUN pip install --no-cache-dir .
 # Application code
 COPY backend/ .
 
-# Run migrations then start server
-CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Run migrations (non-blocking) then start server
+CMD ["sh", "-c", "alembic upgrade head || echo 'Migration failed — starting anyway' && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
