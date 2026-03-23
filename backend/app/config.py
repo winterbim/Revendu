@@ -1,8 +1,11 @@
+import logging
 from functools import lru_cache
 from typing import Literal
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
@@ -81,12 +84,12 @@ class Settings(BaseSettings):
     @field_validator("stripe_webhook_secret")
     @classmethod
     def validate_stripe_webhook(cls, v: str, info) -> str:
-        """Ensure Stripe webhook secret is configured in production."""
+        """Warn if Stripe webhook secret is not configured in production."""
         if info.data.get("environment") == "production":
             if not v or "whsec_" not in v:
-                raise ValueError(
-                    "STRIPE_WEBHOOK_SECRET must be set in production. "
-                    "Get it from Stripe dashboard."
+                logger.warning(
+                    "STRIPE_WEBHOOK_SECRET is not set — Stripe webhooks will be disabled. "
+                    "Set it from your Stripe dashboard when ready."
                 )
         return v
 
