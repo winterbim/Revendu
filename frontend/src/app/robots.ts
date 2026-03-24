@@ -1,13 +1,13 @@
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://revendu.fr";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://revendu.vercel.app";
 
   return {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/login", "/register"],
+        allow: ["/", "/login", "/register", "/pricing", "/blog", "/a-propos"],
         disallow: ["/api/", "/dashboard", "/ventes", "/alertes", "/export", "/sync"],
       },
       {

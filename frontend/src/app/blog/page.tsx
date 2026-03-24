@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { TrendingUp, ArrowRight, Clock, Eye } from "lucide-react";
+import { TrendingUp, ArrowRight, Clock } from "lucide-react";
 
 const articles = [
   {
@@ -19,20 +19,18 @@ const articles = [
     title: "Comment calculer son vrai profit sur Vinted (frais inclus)",
     description:
       "Le prix de vente n'est pas votre profit. Découvrez la vraie formule avec tous les frais Vinted, et combien vous gagnez réellement.",
-    date: "Bientôt",
+    date: "24 mars 2026",
     readTime: "6 min",
     tag: "Guide",
-    upcoming: true,
   },
   {
-    slug: "erreurs-revendeurs-vinted",
-    title: "5 erreurs fiscales que font 90% des revendeurs Vinted",
+    slug: "30-ventes-vinted-que-se-passe-t-il",
+    title: "30 ventes sur Vinted : que se passe-t-il avec les impôts ?",
     description:
-      "Ne pas suivre ses ventes, confondre CA et profit, ignorer DAC7... Les erreurs les plus courantes et comment les éviter.",
-    date: "Bientôt",
+      "Vous approchez des 30 ventes ? Découvrez ce qui se passe concrètement : transmission DGFIP, imposition, et comment anticiper.",
+    date: "24 mars 2026",
     readTime: "5 min",
-    tag: "Conseils",
-    upcoming: true,
+    tag: "Fiscalité",
   },
 ];
 
@@ -76,12 +74,8 @@ export default function BlogPage() {
           {articles.map((article) => (
             <Link
               key={article.slug}
-              href={article.upcoming ? "#" : `/blog/${article.slug}`}
-              className={`block rounded-2xl border border-white/6 bg-card p-6 transition-all ${
-                article.upcoming
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:border-indigo-500/30 hover:bg-card/80 hover:-translate-y-0.5"
-              }`}
+              href={`/blog/${article.slug}`}
+              className="block rounded-2xl border border-white/6 bg-card p-6 transition-all hover:border-indigo-500/30 hover:bg-card/80 hover:-translate-y-0.5"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -98,9 +92,7 @@ export default function BlogPage() {
                   <p className="text-sm text-muted-foreground leading-relaxed">{article.description}</p>
                   <p className="text-xs text-muted-foreground mt-3">{article.date}</p>
                 </div>
-                {!article.upcoming && (
-                  <ArrowRight className="h-5 w-5 text-muted-foreground shrink-0 mt-1" />
-                )}
+                <ArrowRight className="h-5 w-5 text-muted-foreground shrink-0 mt-1" />
               </div>
             </Link>
           ))}
