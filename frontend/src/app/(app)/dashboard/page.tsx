@@ -11,10 +11,11 @@ import { RecentSales } from "@/components/dashboard/RecentSales";
 import { SankeyChart } from "@/components/dashboard/SankeyChart";
 import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
 import { formatEuro } from "@/lib/utils";
-import { dashboardApi, type StatsResponse, type Item } from "@/lib/api";
+import { dashboardApi, paymentsApi, type StatsResponse, type Item } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { useSidebar } from "../sidebar-context";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
 function YearSelector({ year, onChange }: { year: number; onChange: (y: number) => void }) {
   const currentYear = new Date().getFullYear();
@@ -156,9 +157,17 @@ export default function DashboardPage() {
 
         {/* Upgrade banner for free users */}
         {user?.plan === "free" && (
-          <Link
-            href="/pricing"
-            className="flex items-center justify-between gap-4 rounded-xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 to-violet-500/10 p-4 hover:border-indigo-500/50 hover:from-indigo-500/15 hover:to-violet-500/15 transition-all"
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                const { checkout_url } = await paymentsApi.createCheckout();
+                window.location.href = checkout_url;
+              } catch {
+                alert("Erreur lors de la création du paiement. Veuillez réessayer.");
+              }
+            }}
+            className="w-full flex items-center justify-between gap-4 rounded-xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 to-violet-500/10 p-4 hover:border-indigo-500/50 hover:from-indigo-500/15 hover:to-violet-500/15 transition-all text-left"
           >
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <Lock className="h-5 w-5 text-indigo-400 shrink-0" />
@@ -168,9 +177,9 @@ export default function DashboardPage() {
               </div>
             </div>
             <span className="inline-flex items-center rounded-lg bg-indigo-500/20 px-3 py-1.5 text-xs font-semibold text-indigo-300 border border-indigo-500/30 shrink-0 hover:bg-indigo-500/30">
-              Découvrir Pro →
+              Passer à Pro →
             </span>
-          </Link>
+          </button>
         )}
 
         {/* Stats grid */}

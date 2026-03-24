@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/lib/auth";
+import { paymentsApi } from "@/lib/api";
 import type { Metadata } from "next";
 import {
   CheckCircle2,
@@ -16,6 +18,54 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+
+// ─── Pro Checkout Button ─────────────────────────────────────────────────────
+
+function ProCheckoutButton() {
+  let user = null;
+  try {
+    const auth = useAuth();
+    user = auth.user;
+  } catch {
+    // Auth context not available (public page without AuthProvider)
+    user = null;
+  }
+  const [loading, setLoading] = useState(false);
+
+  if (user) {
+    // Utilisateur connecté → lancer le checkout Stripe directement
+    return (
+      <Button
+        className="w-full bg-gradient-to-br from-indigo-500 to-violet-600 hover:shadow-lg hover:shadow-indigo-500/30"
+        size="lg"
+        disabled={loading || user.plan !== "free"}
+        onClick={async () => {
+          setLoading(true);
+          try {
+            const { checkout_url } = await paymentsApi.createCheckout();
+            window.location.href = checkout_url;
+          } catch {
+            alert("Erreur lors de la création du paiement. Veuillez réessayer.");
+            setLoading(false);
+          }
+        }}
+      >
+        {loading ? "Redirection vers Stripe..." : user.plan === "free" ? "Passer à Pro maintenant" : "Déjà abonné ✓"}
+      </Button>
+    );
+  }
+
+  // Utilisateur non connecté → inscription
+  return (
+    <Button
+      asChild
+      className="w-full bg-gradient-to-br from-indigo-500 to-violet-600 hover:shadow-lg hover:shadow-indigo-500/30"
+      size="lg"
+    >
+      <Link href="/register">Essayer Pro gratuitement</Link>
+    </Button>
+  );
+}
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
 
@@ -245,13 +295,7 @@ function PricingPlans() {
                 </ul>
 
                 <div className="pt-4 flex flex-col gap-3 mt-auto">
-                  <Button
-                    asChild
-                    className="w-full bg-gradient-to-br from-indigo-500 to-violet-600 hover:shadow-lg hover:shadow-indigo-500/30"
-                    size="lg"
-                  >
-                    <Link href="/register">Essayer Pro gratuitement</Link>
-                  </Button>
+                  <ProCheckoutButton />
                   <p className="text-xs text-muted-foreground text-center">
                     Accès complet pendant 7 jours
                   </p>

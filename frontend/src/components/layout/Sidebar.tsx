@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { dashboardApi, type StatsResponse } from "@/lib/api";
+import { dashboardApi, paymentsApi, type StatsResponse } from "@/lib/api";
 
 interface NavItem {
   href: string;
@@ -246,18 +246,26 @@ export function Sidebar({ onClose }: SidebarProps) {
               </div>
             </div>
             {user.plan === "free" && (
-              <Link
-                href="/pricing"
-                onClick={onClose}
+              <button
+                type="button"
+                onClick={async () => {
+                  onClose?.();
+                  try {
+                    const { checkout_url } = await paymentsApi.createCheckout();
+                    window.location.href = checkout_url;
+                  } catch {
+                    alert("Erreur lors de la création du paiement.");
+                  }
+                }}
                 className={cn(
-                  "flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all",
+                  "w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all",
                   "bg-gradient-to-r from-indigo-500/20 to-violet-500/20 border border-indigo-500/30 text-indigo-300",
                   "hover:from-indigo-500/30 hover:to-violet-500/30 hover:border-indigo-500/40"
                 )}
               >
                 <span>Passer à Pro</span>
                 <ChevronRight className="h-3.5 w-3.5" />
-              </Link>
+              </button>
             )}
           </>
         )}
